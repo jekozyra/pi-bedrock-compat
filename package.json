@@ -1,17 +1,18 @@
 {
-  "name": "pi-bedrock-tool-result-images",
+  "name": "pi-bedrock-compat",
   "version": "0.1.0",
-  "description": "Fix tool-result image placement for Pi models using Amazon Bedrock Converse",
+  "description": "Compatibility fixes for Pi models using Amazon Bedrock Converse",
   "keywords": [
     "amazon-bedrock",
     "bedrock-converse",
+    "compatibility",
     "pi-extension",
     "pi-package"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jekozyra/pi-bedrock-tool-result-images.git"
+    "url": "git+https://github.com/jekozyra/pi-bedrock-compat.git"
   },
   "files": [
     "src",

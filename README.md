@@ -1,6 +1,10 @@
-# pi-bedrock-tool-result-images
+# pi-bedrock-compat
 
-A [Pi](https://pi.dev) extension that fixes image placement for models accessed through Amazon Bedrock Converse.
+A [Pi](https://pi.dev) extension for compatibility fixes needed by models accessed through Amazon Bedrock Converse.
+
+## Tool-result images
+
+The extension currently fixes image placement for Bedrock models that do not support images nested inside tool results.
 
 Pi normally places images returned by tools inside `toolResult.content`. Amazon Bedrock documents that nested shape only for Anthropic Claude and Amazon Nova. Other image-capable Bedrock models can accept the same image in an ordinary user content block but reject it inside a tool result with:
 
@@ -15,20 +19,20 @@ This extension rewrites only the outgoing provider payload. It moves nested tool
 From npm after publication:
 
 ```bash
-pi install npm:pi-bedrock-tool-result-images
+pi install npm:pi-bedrock-compat
 ```
 
 Directly from GitHub:
 
 ```bash
-pi install git:github.com/jekozyra/pi-bedrock-tool-result-images
+pi install git:github.com/jekozyra/pi-bedrock-compat
 ```
 
 Restart Pi after installation, or use `/reload` in an active session.
 
 ## Scope
 
-The extension runs only when all of the following are true:
+The tool-result image fix runs only when all of the following are true:
 
 - the selected provider is `amazon-bedrock`
 - its API is `bedrock-converse-stream`
@@ -59,6 +63,7 @@ If a tool result contained only images, the extension leaves a `<empty>` text bl
 - Unknown or malformed payloads are left unchanged.
 - The extension relies on Pi's `before_provider_request` hook and the current Bedrock Converse payload shape.
 - AWS model behavior can differ from its documented support matrix. Hoisting is used as the conservative default outside Claude and Nova.
+- OpenAI models on Bedrock return encrypted reasoning that Pi displays as `[Reasoning redacted]`. AWS does not currently expose a request option for visible OpenAI reasoning summaries, so this extension leaves that marker unchanged.
 
 ## Development
 

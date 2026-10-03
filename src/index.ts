@@ -16,7 +16,7 @@ export function shouldRewrite(model: ProviderModel | undefined): boolean {
   );
 }
 
-export default function bedrockToolResultImages(pi: ExtensionAPI): void {
+export default function bedrockCompat(pi: ExtensionAPI): void {
   pi.on("before_provider_request", (event, ctx) => {
     if (!shouldRewrite(ctx.model)) return undefined;
 
