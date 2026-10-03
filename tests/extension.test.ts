@@ -36,10 +36,7 @@ describe("shouldRewrite", () => {
   it("excludes Claude, Nova, other providers, and other Bedrock APIs", () => {
     assert.equal(shouldRewrite(bedrock("us.anthropic.claude-sonnet-4-6-v1:0")), false);
     assert.equal(shouldRewrite(bedrock("amazon.nova-pro-v1:0")), false);
-    assert.equal(
-      shouldRewrite({ ...bedrock("openai.gpt-5.6-sol"), provider: "openai" }),
-      false,
-    );
+    assert.equal(shouldRewrite({ ...bedrock("openai.gpt-5.6-sol"), provider: "openai" }), false);
     assert.equal(
       shouldRewrite({ ...bedrock("openai.gpt-5.6-sol"), api: "openai-responses" }),
       false,

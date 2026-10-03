@@ -1,9 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import {
-  hoistToolResultImages,
-  supportsNestedToolResultImages,
-} from "../src/payload.ts";
+import { hoistToolResultImages, supportsNestedToolResultImages } from "../src/payload.ts";
 
 const image = { image: { format: "png", source: { bytes: new Uint8Array([1, 2, 3]) } } };
 
@@ -25,11 +22,17 @@ describe("supportsNestedToolResultImages", () => {
 
   it("recognizes supported families from application profile names", () => {
     assert.equal(
-      supportsNestedToolResultImages({ id: "arn:aws:bedrock:us-east-1:123:application-inference-profile/x", name: "Claude Sonnet" }),
+      supportsNestedToolResultImages({
+        id: "arn:aws:bedrock:us-east-1:123:application-inference-profile/x",
+        name: "Claude Sonnet",
+      }),
       true,
     );
     assert.equal(
-      supportsNestedToolResultImages({ id: "arn:aws:bedrock:us-east-1:123:application-inference-profile/y", name: "Amazon Nova Pro" }),
+      supportsNestedToolResultImages({
+        id: "arn:aws:bedrock:us-east-1:123:application-inference-profile/y",
+        name: "Amazon Nova Pro",
+      }),
       true,
     );
   });
