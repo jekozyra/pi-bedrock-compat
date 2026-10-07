@@ -18,7 +18,9 @@ export function shouldRewrite(model: ProviderModel | undefined): boolean {
 
 export default function bedrockCompat(pi: ExtensionAPI): void {
   pi.on("before_provider_request", (event, ctx) => {
-    if (!shouldRewrite(ctx.model)) return undefined;
+    if (!shouldRewrite(ctx.model)) {
+      return undefined;
+    }
 
     const rewritten = hoistToolResultImages(event.payload);
     return rewritten === event.payload ? undefined : rewritten;

@@ -41,13 +41,19 @@ function rewriteMessage(message: unknown): { message: unknown; changed: boolean 
   const hoistedImages: UnknownRecord[] = [];
   let changed = false;
   const content = message.content.map((block) => {
-    if (!isRecord(block) || !isRecord(block.toolResult)) return block;
+    if (!isRecord(block) || !isRecord(block.toolResult)) {
+      return block;
+    }
 
     const toolResult = block.toolResult;
-    if (!Array.isArray(toolResult.content)) return block;
+    if (!Array.isArray(toolResult.content)) {
+      return block;
+    }
 
     const images = toolResult.content.filter(isImageBlock);
-    if (images.length === 0) return block;
+    if (images.length === 0) {
+      return block;
+    }
 
     const remaining = toolResult.content.filter((item) => !isImageBlock(item));
     hoistedImages.push(...images);
@@ -62,7 +68,9 @@ function rewriteMessage(message: unknown): { message: unknown; changed: boolean 
     };
   });
 
-  if (!changed) return { message, changed: false };
+  if (!changed) {
+    return { message, changed: false };
+  }
 
   return {
     message: { ...message, content: [...content, ...hoistedImages] },
@@ -75,7 +83,9 @@ function rewriteMessage(message: unknown): { message: unknown; changed: boolean 
  * Malformed or unrelated payloads are returned unchanged.
  */
 export function hoistToolResultImages(payload: unknown): unknown {
-  if (!isRecord(payload) || !Array.isArray(payload.messages)) return payload;
+  if (!isRecord(payload) || !Array.isArray(payload.messages)) {
+    return payload;
+  }
 
   let changed = false;
   const messages = payload.messages.map((message) => {

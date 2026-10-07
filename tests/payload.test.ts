@@ -131,6 +131,8 @@ describe("hoistToolResultImages", () => {
       payload([{ toolResult: { content: "invalid" } }]),
     ];
 
-    for (const input of inputs) assert.equal(hoistToolResultImages(input), input);
+    for (const input of inputs) {
+      assert.equal(hoistToolResultImages(input), input);
+    }
   });
 });

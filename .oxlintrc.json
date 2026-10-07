@@ -2,7 +2,12 @@
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "oxc"],
   "categories": {
-    "correctness": "error"
+    "correctness": "error",
+    "perf": "error"
+  },
+  "rules": {
+    "curly": "error",
+    "typescript/ban-types": "error"
   },
   "env": {
     "node": true
