@@ -1,0 +1,57 @@
+{
+  "name": "pi-bedrock-compat",
+  "version": "0.1.0",
+  "description": "Compatibility fixes for Pi models using Amazon Bedrock Converse",
+  "keywords": [
+    "amazon-bedrock",
+    "bedrock-converse",
+    "compatibility",
+    "pi-extension",
+    "pi-package"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jekozyra/pi-bedrock-compat.git"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "type": "module",
+  "scripts": {
+    "test": "tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run fmt:check && npm run lint && npm run typecheck && npm test",
+    "smoke:package": "npm pack --dry-run",
+    "fmt": "oxfmt --write .",
+    "fmt:check": "oxfmt --check .",
+    "lint": "oxlint --deny-warnings src tests"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "1.0.0",
+    "@types/node": "^22.0.0",
+    "oxfmt": "0.68.0",
+    "oxlint": "1.83.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "peerDependenciesMeta": {
+    "@earendil-works/pi-coding-agent": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  }
+}
