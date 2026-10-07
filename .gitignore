@@ -1,3 +1,5 @@
 node_modules/
+.pi/
+.tokensave/
 *.tgz
 .DS_Store
