@@ -82,7 +82,7 @@ function isReasoningTextBlock(value: unknown): boolean {
  *
  * OpenAI models on Bedrock reject `reasoningContent.reasoningText.text` in assistant history.
  * The encrypted `redactedContent` block carries the reasoning state, so the summary is display-only.
- * A message that would become empty is left unchanged.
+ * A message that would become empty is dropped rather than replaying an invalid block.
  */
 export function stripReplayedReasoningText(payload: unknown): unknown {
   if (!isRecord(payload) || !Array.isArray(payload.messages)) {
@@ -90,18 +90,18 @@ export function stripReplayedReasoningText(payload: unknown): unknown {
   }
 
   let changed = false;
-  const messages = payload.messages.map((message) => {
+  const messages = payload.messages.flatMap((message) => {
     if (!isRecord(message) || message.role !== "assistant" || !Array.isArray(message.content)) {
-      return message;
+      return [message];
     }
 
     const content = message.content.filter((block) => !isReasoningTextBlock(block));
-    if (content.length === message.content.length || content.length === 0) {
-      return message;
+    if (content.length === message.content.length) {
+      return [message];
     }
 
     changed = true;
-    return { ...message, content };
+    return content.length === 0 ? [] : [{ ...message, content }];
   });
 
   return changed ? { ...payload, messages } : payload;

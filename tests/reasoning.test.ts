@@ -108,9 +108,13 @@ describe("stripReplayedReasoningText", () => {
     assert.equal(stripReplayedReasoningText(unrelated), unrelated);
   });
 
-  it("leaves a message unchanged when stripping would empty it", () => {
-    const input = { messages: [{ role: "assistant", content: [summaryText] }] };
+  it("drops a summary-only assistant message instead of replaying rejected reasoning", () => {
+    const first = { role: "user", content: [{ text: "Is 391 prime?" }] };
+    const last = { role: "user", content: [{ text: "And 397?" }] };
+    const input = { messages: [first, { role: "assistant", content: [summaryText] }, last] };
+    const snapshot = structuredClone(input);
 
-    assert.equal(stripReplayedReasoningText(input), input);
+    assert.deepEqual(stripReplayedReasoningText(input), { messages: [first, last] });
+    assert.deepEqual(input, snapshot);
   });
 });
