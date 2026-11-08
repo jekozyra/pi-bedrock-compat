@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import register, { shouldRewrite, type ProviderModel } from "../src/index.ts";
+import register, {
+  rewritePayload,
+  shouldRewrite,
+  shouldRewriteReasoning,
+  type ProviderModel,
+} from "../src/index.ts";
 
 type Handler = (event: { payload: unknown }, ctx: { model?: ProviderModel }) => unknown;
 
@@ -42,6 +47,67 @@ describe("shouldRewrite", () => {
       false,
     );
     assert.equal(shouldRewrite(undefined), false);
+  });
+});
+
+describe("shouldRewriteReasoning", () => {
+  it("selects OpenAI GPT models on Bedrock Converse only", () => {
+    assert.equal(shouldRewriteReasoning(bedrock("us.openai.gpt-6-luna")), true);
+    assert.equal(shouldRewriteReasoning(bedrock("openai.gpt-oss-120b-1:0")), false);
+    assert.equal(shouldRewriteReasoning(bedrock("us.anthropic.claude-sonnet-4-6-v1:0")), false);
+    assert.equal(
+      shouldRewriteReasoning({ ...bedrock("us.openai.gpt-6-luna"), api: "openai-responses" }),
+      false,
+    );
+    assert.equal(shouldRewriteReasoning(undefined), false);
+  });
+});
+
+describe("rewritePayload reasoning", () => {
+  const redacted = { reasoningContent: { redactedContent: new Uint8Array([9]) } };
+  const summaryText = { reasoningContent: { reasoningText: { text: "summary" } } };
+  const payload = () => ({
+    additionalModelRequestFields: { reasoning: { effort: "medium" } },
+    messages: [
+      { role: "user", content: [{ text: "q1" }] },
+      { role: "assistant", content: [summaryText, redacted, { text: "a1" }] },
+      { role: "user", content: [{ text: "q2" }] },
+    ],
+  });
+
+  it("requests summaries and strips replayed summaries for GPT models", () => {
+    const output = rewritePayload(payload(), bedrock("us.openai.gpt-6-luna"), {}) as ReturnType<
+      typeof payload
+    >;
+
+    assert.deepEqual(output.additionalModelRequestFields, {
+      reasoning: { effort: "medium", summary: "auto" },
+    });
+    assert.deepEqual(output.messages[1].content, [redacted, { text: "a1" }]);
+  });
+
+  it("honors the summary level and opt-out", () => {
+    const model = bedrock("us.openai.gpt-6-luna");
+    const detailed = rewritePayload(payload(), model, {
+      PI_BEDROCK_REASONING_SUMMARY: "detailed",
+    }) as ReturnType<typeof payload>;
+    const off = rewritePayload(payload(), model, {
+      PI_BEDROCK_REASONING_SUMMARY: "off",
+    }) as ReturnType<typeof payload>;
+
+    assert.deepEqual(detailed.additionalModelRequestFields.reasoning, {
+      effort: "medium",
+      summary: "detailed",
+    });
+    assert.deepEqual(off.additionalModelRequestFields.reasoning, { effort: "medium" });
+    // Replay cleanup still runs so sessions with stored summaries keep working.
+    assert.deepEqual(off.messages[1].content, [redacted, { text: "a1" }]);
+  });
+
+  it("does not touch Claude reasoning", () => {
+    const input = payload();
+
+    assert.equal(rewritePayload(input, bedrock("us.anthropic.claude-sonnet-4-6-v1:0"), {}), input);
   });
 });
 
